@@ -410,6 +410,8 @@ function optimize(){
   const par=st.map((_,i)=>i);const f=x=>{while(par[x]!==x){par[x]=par[par[x]];x=par[x]}return x};
   const sepA=st.map(()=>[]);
   for(const p of S.pairs){const a=idx.get(p.a),b=idx.get(p.b);if(a==null||b==null)continue;if(p.t==='tog')par[f(a)]=f(b);else{sepA[a].push(b);sepA[b].push(a)}}
+  /* 동명이인은 자동으로 분리 */
+  {const nm=new Map();st.forEach((s,i)=>{const n=String(s.name).trim();if(!n)return;if(!nm.has(n))nm.set(n,[]);nm.get(n).push(i)});nm.forEach(L=>{for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++){sepA[L[x]].push(L[y]);sepA[L[y]].push(L[x])}})}
   const um=new Map();st.forEach((s,i)=>{const r=f(i);if(!um.has(r))um.set(r,[]);um.get(r).push(i)});
   const units=[...um.values()].map(m=>{let fx=-1;for(const i of m){const v=st[i].fix;if(has(v)&&+v<k)fx=+v}return{m,fx}});
   const free=units.map((_,i)=>i).filter(i=>units[i].fx<0);
@@ -464,6 +466,7 @@ function renderResult(){
   for(const p of S.pairs){const a=B[p.a],b=B[p.b];if(!a||!b)continue;const ca=S.asg[a.id],cb=S.asg[b.id];
     if(p.t==='sep'&&ca===cb&&ca>=0&&ca<k){vl.push(`분리 조건 위반: ${esc(a.name)} · ${esc(b.name)} (${cname(ca)})`);bad.add(a.id);bad.add(b.id)}
     if(p.t==='tog'&&ca!==cb){vl.push(`동반 조건 위반: ${esc(a.name)} · ${esc(b.name)}가 다른 반입니다`);bad.add(a.id);bad.add(b.id)}}
+  {const seen=new Map();st.forEach(s=>{const c=S.asg[s.id];if(!(c>=0&&c<k))return;const key=c+'|'+String(s.name).trim();if(seen.has(key)){const o=seen.get(key);vl.push(`동명이인이 같은 반: ${esc(s.name)} (${cname(c)})`);bad.add(o.id);bad.add(s.id)}else seen.set(key,s)})}
   st.forEach(s=>{if(has(s.fix)&&+s.fix<k&&S.asg[s.id]!==+s.fix){vl.push(`고정과 다름: ${esc(s.name)} → 고정 ${cname(+s.fix)}`);bad.add(s.id)}});
   if(un.length)vl.push(`아직 반이 없는 학생 ${un.length}명 (${un.slice(0,5).map(s=>esc(s.name)).join(', ')}${un.length>5?' 외':''}) — 자동 편성을 다시 눌러 주세요`);
   $('#viol').innerHTML=vl.map(v=>`<p>${v}</p>`).join('');

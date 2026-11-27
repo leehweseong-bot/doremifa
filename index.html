@@ -188,7 +188,9 @@ button.pt{min-height:30px;cursor:pointer}
 .ovs.out b{text-decoration:line-through;color:var(--mut)}
 .ovk header em.hp{font-style:normal;font-size:12px;font-weight:700;margin-left:3px;padding:0 4px;border-radius:3px;background:light-dark(#f1eafd,#2a2140);color:light-dark(#6a3fb5,#c3a6f5)}
 .ovk header b{white-space:nowrap}
-.jb .wkc{display:block;font-size:11px;font-weight:500;color:var(--mut);line-height:1.1;margin-top:1px;white-space:nowrap}
+.jb.jf{--fc:light-dark(#dcdcd6,#3a3d3b);background:linear-gradient(to top,var(--fc) var(--fh),transparent var(--fh))}.jb.h1{--fh:33.4%}.jb.h2{--fh:66.7%}.jb.h3{--fh:100%}
+.jb.f0{--fc:light-dark(#f7c1c1,#5a2626)}.jb.f1{--fc:light-dark(#fbd2ab,#5a3a1c)}.jb.f2{--fc:light-dark(#b5d4f4,#1d3a5c)}.jb.f3{--fc:light-dark(#bfe6cc,#1d4a30)}
+.jb.jf:hover{filter:brightness(.96)}
 .ovs em.pl{background:light-dark(#f1eafd,#2a2140);color:light-dark(#6a3fb5,#c3a6f5)}
 .grid tr:has(.ob.on:not(.pb)) td input[data-f=name]{color:var(--mut);text-decoration:line-through}
 .prb{width:100%;min-height:46px;height:100%;border:0;border-radius:0;background:transparent;display:flex;flex-wrap:wrap;gap:5px;align-items:center;justify-content:center;padding:4px 8px}
@@ -356,8 +358,8 @@ function cells(s,sex){
     L(1,'c',`<input data-f="no" value="${esc(v('no'))}" aria-label="번호">`)+
     L(2,'c',`<input data-f="name" value="${esc(v('name'))}" aria-label="이름"${s?'':' placeholder="이름 입력"'}>`)+
     L(3,'c',`<select data-f="sex" aria-label="성별">${opts([['','-'],['M','남'],['F','여']],s?v('sex'):sex)}</select>`)+
-    L(4,'c lf',s?`<button class="jb" data-jm="learn" data-jid="${s.id}" aria-label="${esc(s.name)} 학습">${has(s.lstg)?SG(+s.lstg):''}${has(s.lwk)?`<small class="wkc">${WK[+s.lwk]}</small>`:''}</button>`:'')+
-    L(5,'c lf',s?`<button class="jb" data-jm="life" data-jid="${s.id}" aria-label="${esc(s.name)} 생활">${has(s.stg)?SG(+s.stg):''}${has(s.wk)?`<small class="wkc">${WK[+s.wk]}</small>`:''}</button>`:'')+
+    L(4,'c lf',s?`<button class="jb${jf(s.lstg,s.lwk)}" data-jm="learn" data-jid="${s.id}" aria-label="${esc(s.name)} 학습${has(s.lwk)?' 주당 '+WK[+s.lwk]:''}">${has(s.lstg)?SG(+s.lstg):''}</button>`:'')+
+    L(5,'c lf',s?`<button class="jb${jf(s.stg,s.wk)}" data-jm="life" data-jid="${s.id}" aria-label="${esc(s.name)} 생활${has(s.wk)?' 주당 '+WK[+s.wk]:''}">${has(s.stg)?SG(+s.stg):''}</button>`:'')+
     L(6,'pc',s?pairCell(s):'')+
     L(7,'c oc',s?`<button class="ob pb${s.plus?' on':''}" data-plus="${s.id}" aria-pressed="${!!s.plus}" aria-label="${esc(s.name)} +1 처리">${s.plus?'+1':''}</button>`:'')+
     L(8,'c oc',s?`<button class="ob${s.out?' on':''}" data-out="${s.id}" aria-pressed="${!!s.out}" aria-label="${esc(s.name)} 전출 예정">${s.out?'예정':''}</button>`:'');
@@ -368,6 +370,7 @@ function table(list,sex,title){
   <tbody data-sex="${sex}">${list.map(s=>`<tr data-id="${s.id}">${cells(s)}<td class="x"><button class="x" data-del="${s.id}" aria-label="${esc(s.name)} 삭제">✕</button></td></tr>`).join('')}<tr class="newrow" data-new="1">${cells(null,sex)}<td class="x"></td></tr></tbody></table></div>`;
 }
 const SG=i=>`<span class="sg sg${i}">${STG[i]}</span>`;
+const jf=(st,wk)=>has(wk)&&+wk>0?` jf h${+wk}${has(st)?' f'+st:''}`:'';
 const CC=['light-dark(#fef1f1,#2c1a1b)','light-dark(#fef4ec,#2c2118)','light-dark(#fdf9e6,#2a2619)','light-dark(#eff9f0,#16261a)','light-dark(#eef5fd,#172230)','light-dark(#f1f2fc,#1b1d33)','light-dark(#f7f1fc,#241b30)'];
 const ccOf=c=>CC[Math.max(0,classes().indexOf(String(c)))%CC.length];
 const SUR2=['남궁','황보','제갈','선우','독고','사공','서문','동방','어금','망절'];

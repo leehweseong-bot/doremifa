@@ -169,10 +169,10 @@ button.pt{min-height:30px;cursor:pointer}
 .ovs.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:light-dark(#fffbe8,#2a2612)}.ovs.on b{font-weight:700}
 .ovs.sep{background:var(--badbg);border-color:var(--bad)}
 .ovs.bad{background:var(--badbg);border-color:var(--bad)}
-.ovs.rs{background:var(--rc);grid-template-columns:1.6em minmax(0,1fr) 1.1em 1.1em auto 2.6em}
+.ovs.rs{grid-template-columns:1.6em minmax(0,1fr) 1.1em 1.1em auto 2.6em}
 .ovs.rs small{font-size:12px;color:var(--mut);text-align:right;white-space:nowrap}
 .ovs.rs.on{background:light-dark(#fffbe8,#2a2612)}.ovs.rs.sep,.ovs.rs.bad{background:var(--badbg)}.ovs.rs.tog{background:var(--okbg)}
-.ovk footer .pc{background:var(--rc);padding:1px 6px;border-radius:4px;color:var(--ink)}
+.ovk footer .pc{background:var(--bg);padding:1px 6px;border-radius:4px;color:var(--ink)}
 #run .ovg{grid-auto-columns:244px}
 .ovs em.fx{background:var(--card);color:var(--mut)}
 #run .ovg{margin-top:12px}#run .ovk .mv{min-height:32px;font-size:14px;margin:0 0 6px}#run .ovk .mv.fx{background:var(--card);color:var(--ink);border:1px solid var(--line)}
@@ -485,11 +485,11 @@ function renderResult(){
   const sS=sel!=null?B[sel]:null;if(!sS)sel=null;
   const prevs=[...new Set(st.map(s=>String(s.cls)))].sort((a,b)=>num(a)-num(b)||a.localeCompare(b));
   const pm=id=>{const L=pairsOf(id);const n1=L.filter(x=>x.t==='sep').length,n2=L.length-n1;return (n1?`<em class="sep">분${n1>1?n1:''}</em>`:'')+(n2?`<em class="tog">동${n2>1?n2:''}</em>`:'')};
-  const row=(s,j)=>`<button class="ovs rs ${s.sex}${s.out?' out':''}${s.id===sel?' on':''}${bad.has(s.id)?' bad':''}" style="--rc:${ccOf(s.cls)}" data-id="${s.id}" title="${esc(s.cls)}반 ${esc(s.no)}번"><span>${j+1}</span><b>${esc(s.name)}</b><i>${has(s.lstg)?SG(+s.lstg):'·'}</i><i>${has(s.stg)?SG(+s.stg):'·'}</i><u>${has(s.fix)?'<em class="fx">고정</em>':''}${pm(s.id)}</u><small>${esc(s.cls)}</small></button>`;
+  const row=(s,j)=>`<button class="ovs rs ${s.sex}${s.out?' out':''}${s.id===sel?' on':''}${bad.has(s.id)?' bad':''}" data-id="${s.id}" title="${esc(s.cls)}반 ${esc(s.no)}번"><span>${j+1}</span><b>${esc(s.name)}</b><i>${has(s.lstg)?SG(+s.lstg):'·'}</i><i>${has(s.stg)?SG(+s.stg):'·'}</i><u>${has(s.fix)?'<em class="fx">고정</em>':''}${pm(s.id)}</u><small>${esc(s.cls)}</small></button>`;
   box.innerHTML=`<div class="ovg">${C.map((c,i)=>{const n=c.filter(s=>!s.out),m=n.filter(s=>s.sex==='M').length,o=c.length-n.length,can=sS&&S.asg[sel]!==i;
     const pv={};n.forEach(s=>pv[s.cls]=(pv[s.cls]||0)+1);
     return `<section class="ovk"><header><b>${cname(i)}</b><span>${n.length}명${o?` +전출${o}`:''} · 남${m} 여${n.length-m}</span></header>${can?`<button class="mv" data-mv="${i}">${esc(sS.name)} 여기로</button>`:''}${sS&&S.asg[sel]===i?`<button class="mv fx" data-fix="1">${has(sS.fix)?'고정 풀기':esc(sS.name)+' 이 반에 고정'}</button>`:''}<div class="ovl">${c.map(row).join('')}</div>
-    <footer><b>이전 학반</b>${prevs.map(p=>`<span class="pc" style="--rc:${ccOf(p)}">${esc(p)}반 <i>${pv[p]||0}</i></span>`).join('')}</footer></section>`}).join('')}</div>`;
+    <footer><b>이전 학반</b>${prevs.map(p=>`<span class="pc">${esc(p)}반 <i>${pv[p]||0}</i></span>`).join('')}</footer></section>`}).join('')}</div>`;
 }
 
 /* 엑셀 */

@@ -359,10 +359,12 @@ const ccOf=c=>CC[Math.max(0,classes().indexOf(String(c)))%CC.length];
 const SUR2=['남궁','황보','제갈','선우','독고','사공','서문','동방','어금','망절'];
 const given=n=>{n=String(n||'').replace(/\s+/g,'');if(n.length<2)return n;return (n.length>=4&&SUR2.includes(n.slice(0,2)))?n.slice(2):n.slice(1)};
 const classes=()=>[...new Set(S.stu.map(x=>String(x.cls)))].sort((a,b)=>num(a)-num(b)||a.localeCompare(b));
-function myCls(){const c=classes();if(S.set.my!=null&&c.includes(String(S.set.my)))return String(S.set.my);return c[0]??''}
-const myRows=()=>{const m=myCls();return sorted().filter(s=>String(s.cls)===m)};
+const isMine=s=>s.src!=='grade';
+const mineClasses=()=>[...new Set(S.stu.filter(isMine).map(x=>String(x.cls)))].sort((a,b)=>num(a)-num(b)||a.localeCompare(b));
+function myCls(){const c=mineClasses();if(S.set.my!=null&&c.includes(String(S.set.my)))return String(S.set.my);return c[0]??''}
+const myRows=()=>{const m=myCls();return sorted().filter(s=>isMine(s)&&String(s.cls)===m)};
 function renderList(){
-  const c=classes(),m=myCls();
+  const c=mineClasses(),m=myCls();
   $('#myc').innerHTML=c.length>1?`<span>우리 반</span>${c.map(x=>`<button data-my="${esc(x)}" class="${x===m?'on':''}">${esc(x||'반 없음')}</button>`).join('')}`:'';
   const rows=myRows(),M=rows.filter(s=>s.sex==='M'),F=rows.filter(s=>s.sex==='F'),U=rows.filter(s=>s.sex!=='M'&&s.sex!=='F');
   $('#lists').innerHTML=table(M,'M','남학생')+table(F,'F','여학생')+(U.length?table(U,'','성별 미입력'):'');
@@ -529,13 +531,13 @@ function upOpen(){G=[];$('#ucls').value='';renderG();$('#up').hidden=false;$('#u
 function upClose(){$('#up').hidden=true}
 function renderG(){const n=Math.max(25,G.length+3);let h='';for(let i=0;i<n;i++){const r=G[i]||['','',''];h+=`<tr><td class="c rn">${i+1}</td>${r.map((v,j)=>`<td${j!==1?' class="c"':''}><input data-r="${i}" data-c="${j}" value="${esc(v)}" aria-label="${UC[j]} ${i+1}"></td>`).join('')}</tr>`}$('#ugb').innerHTML=h;updG()}
 function updG(){const n=G.filter(r=>r&&r[1]&&String(r[1]).trim()).length;$('#ucnt').textContent=n?`학생 ${n}명`:'';
-  const c=$('#ucls').value.trim().replace(/반$/,''),ex=c&&S.stu.some(x=>String(x.cls)===c);
+  const c=$('#ucls').value.trim().replace(/반$/,''),ex=c&&S.stu.some(x=>isMine(x)&&String(x.cls)===c);
   $('#uact').innerHTML=!n?'':ex?`<button data-u="add">${esc(c)}반 뒤에 추가</button><button data-u="rep" class="pri">${esc(c)}반 명단 바꾸기</button>`:'<button data-u="add" class="pri">명단에 넣기</button>';$('#uact').hidden=!n}
 function clipRows(cd){const html=cd.getData('text/html');
   if(html&&/<table/i.test(html)){const d=new DOMParser().parseFromString(html,'text/html');const trs=[...d.querySelectorAll('tr')];if(trs.length)return trs.map(tr=>[...tr.querySelectorAll('td,th')].map(td=>td.textContent.replace(/\s+/g,' ').trim()))}
   const t=cd.getData('text/plain')||'';return t.replace(/\r/g,'').replace(/\n+$/,'').split('\n').map(l=>l.split('\t').map(x=>x.trim()))}
 function upCommit(mode){const cls=$('#ucls').value.trim().replace(/반$/,'');if(!cls){toast('현재반을 먼저 입력해 주세요');$('#ucls').focus();return}const list=G.filter(r=>r&&r[1]&&String(r[1]).trim()).map(r=>{const s=newStu();['no','name','sex'].forEach((f,j)=>setRaw(s,f,r[j]));s.cls=cls;return s});if(!list.length)return toast('이름이 있는 줄이 없어요');upClose();
-  if(mode==='rep'){const gone=new Set(S.stu.filter(x=>String(x.cls)===cls).map(x=>x.id));S.stu=S.stu.filter(x=>!gone.has(x.id));S.pairs=S.pairs.filter(p=>!gone.has(p.a)&&!gone.has(p.b));gone.forEach(id=>delete S.asg[id])}
+  if(mode==='rep'){const gone=new Set(S.stu.filter(x=>isMine(x)&&String(x.cls)===cls).map(x=>x.id));S.stu=S.stu.filter(x=>!gone.has(x.id));S.pairs=S.pairs.filter(p=>!gone.has(p.a)&&!gone.has(p.b));gone.forEach(id=>delete S.asg[id])}
   S.stu.push(...list);S.set.my=cls;save();setTab('list');toast(`${cls}반 ${list.length}명을 ${mode==='rep'?'새로 넣었어요':'넣었어요'}`)}
 /* 준비: 동학년 자료 한눈에 + 분리·동반 고르기 */
 let ovSel=null,ovType='sep';
@@ -555,10 +557,10 @@ function renderOv(){
 const skey=s=>`${String(s.cls).trim()}|${String(s.no).trim()}|${String(s.name).trim()}`;
 const slabel=s=>`${s.cls} ${s.no} ${s.name}`;
 function exportClass(){
-  if(!ready())return;if(!S.stu.length)return toast('먼저 명단을 넣어 주세요');
-  const wb=XLSX.utils.book_new(),L=sorted();
+  if(!ready())return;const L=myRows();if(!L.length)return toast('먼저 우리 반 명단을 넣어 주세요');
+  const wb=XLSX.utils.book_new(),mine=new Set(L.map(s=>s.id));
   XLSX.utils.book_append_sheet(wb,sheet([['현재반','번호','이름','성별','학습','주당 학습지도','생활','주당 생활지도','전출 예정'],...L.map(s=>[s.cls,s.no,s.name,sx(s),has(s.lstg)?STG[+s.lstg]:'',has(s.lwk)?WK[+s.lwk]:'',has(s.stg)?STG[+s.stg]:'',has(s.wk)?WK[+s.wk]:'',s.out?'예정':''])],[7,6,10,6,6,13,6,13,9]),'명단');
-  const B=byId(),P=[['조건','학생 1','학생 2']];S.pairs.forEach(p=>{const a=B[p.a],b=B[p.b];if(a&&b)P.push([p.t==='sep'?'분리':'동반',slabel(a),slabel(b)])});
+  const B=byId(),P=[['조건','학생 1','학생 2']];S.pairs.forEach(p=>{const a=B[p.a],b=B[p.b];if(a&&b&&(mine.has(a.id)||mine.has(b.id)))P.push([p.t==='sep'?'분리':'동반',slabel(a),slabel(b)])});
   XLSX.utils.book_append_sheet(wb,sheet(P,[6,16,16]),'분리·동반');
   const cc={};L.forEach(s=>cc[s.cls]=(cc[s.cls]||0)+1);const top=Object.keys(cc).sort((a,b)=>cc[b]-cc[a])[0]||'';
   saveWb(wb,`도레미파_${top?top+'반_':''}${ymd()}.xlsx`,'우리 반 파일을 내려받았어요. 이 파일을 학년부장님께 보내 주세요');
@@ -581,14 +583,14 @@ async function mergeFiles(files){
   for(const f of files){try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});const r=readRoster(wb);if(r.list.length){ok++;list.push(...r.list);pairs.push(...r.pairs)}}catch(e){}}
   if(!list.length)return toast('파일에서 학생을 찾지 못했어요');
   const go=mode=>{
-    if(mode==='rep'){S.stu=[];S.pairs=[];S.asg={};undo=[]}
+    if(mode==='rep'){const gone=new Set(S.stu.filter(x=>!isMine(x)).map(x=>x.id));S.stu=S.stu.filter(x=>!gone.has(x.id));S.pairs=S.pairs.filter(p=>!gone.has(p.a)&&!gone.has(p.b));S.asg={};undo=[]}
     const byKey=new Map(S.stu.map(s=>[skey(s),s]));let added=0,upd=0;
-    list.forEach(n=>{const o=byKey.get(skey(n));if(o){['sex','lstg','lwk','stg','wk','out'].forEach(k=>{if(n[k]!==''&&n[k]!=null)o[k]=n[k]});upd++}else{S.stu.push(n);byKey.set(skey(n),n);added++}});
+    list.forEach(n=>{const o=byKey.get(skey(n));if(o){['sex','lstg','lwk','stg','wk','out'].forEach(k=>{if(n[k]!==''&&n[k]!=null)o[k]=n[k]});upd++}else{n.src='grade';S.stu.push(n);byKey.set(skey(n),n);added++}});
     let pc=0;pairs.forEach(p=>{const a=byKey.get(p.a),b=byKey.get(p.b);if(!a||!b||a===b)return;const i=S.pairs.findIndex(x=>(x.a===a.id&&x.b===b.id)||(x.a===b.id&&x.b===a.id));if(i>=0)S.pairs[i].t=p.t;else{S.pairs.push({a:a.id,b:b.id,t:p.t});pc++}});
     save();setTab('prep');toast(`파일 ${ok}개 · ${added}명 추가${upd?` · ${upd}명 갱신`:''}${pc?` · 조건 ${pc}개`:''}`);
   };
-  if(!S.stu.length)return go('add');
-  ask(`파일 ${ok}개에서 ${list.length}명을 읽었어요`,`지금 명단 ${S.stu.length}명을 어떻게 할까요? 같은 반·번호·이름인 학생은 파일 내용으로 갱신됩니다.`,[['지금 명단에 합치기','add','pri'],['파일 명단으로 바꾸기','rep',''],['취소','','']],v=>{if(v)go(v)});
+  if(!S.stu.some(x=>!isMine(x)))return go('add');
+  ask(`파일 ${ok}개에서 ${list.length}명을 읽었어요`,`이미 모은 동학년 자료가 있어요. 어떻게 할까요? 같은 반·번호·이름인 학생은 파일 내용으로 갱신됩니다. 우리 반 자료는 그대로 둡니다.`,[['동학년 자료에 합치기','add','pri'],['동학년 자료 새로 바꾸기','rep',''],['취소','','']],v=>{if(v)go(v)});
 }
 function apply(list,mode){if(mode==='rep'){S.stu=list;S.pairs=[];S.asg={};undo=[]}else S.stu.push(...list);save();renderList();setTab('list');toast(`${list.length}명을 ${mode==='rep'?'불러왔어요':'추가했어요'}`)}
 function ask(t,m,btns,cb){$('#dt').textContent=t;$('#dm').textContent=m;$('#db').innerHTML=btns.map(([l,v,c],i)=>`<button data-v="${v}" class="${c}" data-i="${i}">${l}</button>`).join('');$('#dlg').hidden=false;$('#db button').focus();

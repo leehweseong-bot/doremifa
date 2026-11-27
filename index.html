@@ -161,15 +161,15 @@ button.pt{min-height:30px;cursor:pointer}
 .ovk{background:var(--cc,var(--card));border-radius:12px;padding:8px;border-top:4px solid var(--board)}
 .ovk header{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 6px}.ovk header b{font-size:18px}.ovk header span{color:var(--mut);font-size:14px}
 .ovl{display:grid;gap:2px}
-.ovs{display:grid;grid-template-columns:1.6em minmax(0,1fr) 1.1em 1.1em 3.4em;gap:4px;align-items:center;font-size:14px;padding:0 6px;min-height:28px;background:var(--bg);border-radius:5px;border:1px solid transparent;border-left:3px solid var(--mut);text-align:left;width:100%}
+.ovs{display:grid;grid-template-columns:1.6em minmax(0,1fr) 1.6em 1.6em 3.4em;gap:4px;align-items:center;font-size:14px;padding:0 6px;min-height:28px;background:var(--bg);border-radius:5px;border:1px solid transparent;border-left:3px solid var(--mut);text-align:left;width:100%}
 .ovs.M{border-left-color:var(--m)}.ovs.F{border-left-color:var(--f)}
-.ovs span{color:var(--mut);font-size:12px;text-align:right}.ovs b{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ovs i{font-style:normal;text-align:center;font-weight:700}
+.ovs span{color:var(--mut);font-size:12px;text-align:right}.ovs b{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ovs i{font-style:normal;text-align:center;font-weight:700;align-self:stretch;display:grid;place-items:center;margin:1px 0;border-radius:3px}
 .ovs u{text-decoration:none;display:flex;gap:2px;justify-content:flex-end}.ovs em{white-space:nowrap;font-style:normal;font-size:11px;font-weight:700;padding:0 3px;border-radius:3px}
 .ovs em.sep{background:var(--badbg);color:var(--bad)}.ovs em.tog{background:var(--okbg);color:var(--okc)}
 .ovs.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:light-dark(#fffbe8,#2a2612)}.ovs.on b{font-weight:700}
 .ovs.sep{background:var(--badbg);border-color:var(--bad)}
 .ovs.bad{background:var(--badbg);border-color:var(--bad)}
-.ovs.rs{grid-template-columns:1.6em minmax(0,1fr) 1.1em 1.1em auto 2.6em}
+.ovs.rs{grid-template-columns:1.6em minmax(0,1fr) 1.6em 1.6em auto 2.6em}
 .ovs.rs small{font-size:12px;color:var(--mut);text-align:right;white-space:nowrap}
 .ovs.rs.on{background:light-dark(#fffbe8,#2a2612)}.ovs.rs.sep,.ovs.rs.bad{background:var(--badbg)}.ovs.rs.tog{background:var(--okbg)}
 .ovk footer .pc{background:var(--bg);padding:1px 6px;border-radius:4px;color:var(--ink)}
@@ -188,8 +188,8 @@ button.pt{min-height:30px;cursor:pointer}
 .ovs.out b{text-decoration:line-through;color:var(--mut)}
 .ovk header em.hp{font-style:normal;font-size:12px;font-weight:700;margin-left:3px;padding:0 4px;border-radius:3px;background:light-dark(#f1eafd,#2a2140);color:light-dark(#6a3fb5,#c3a6f5)}
 .ovk header b{white-space:nowrap}
-.jb.jf{--fc:light-dark(#dcdcd6,#3a3d3b);background:linear-gradient(to top,var(--fc) var(--fh),transparent var(--fh))}.jb.h1{--fh:33.4%}.jb.h2{--fh:66.7%}.jb.h3{--fh:100%}
-.jb.f0{--fc:light-dark(#f7c1c1,#5a2626)}.jb.f1{--fc:light-dark(#fbd2ab,#5a3a1c)}.jb.f2{--fc:light-dark(#b5d4f4,#1d3a5c)}.jb.f3{--fc:light-dark(#bfe6cc,#1d4a30)}
+.jf{--fc:light-dark(#dcdcd6,#3a3d3b);background:linear-gradient(to top,var(--fc) var(--fh),transparent var(--fh))}.jf.h1{--fh:33.4%}.jf.h2{--fh:66.7%}.jf.h3{--fh:100%}
+.jf.f0{--fc:light-dark(#f7c1c1,#5a2626)}.jf.f1{--fc:light-dark(#fbd2ab,#5a3a1c)}.jf.f2{--fc:light-dark(#b5d4f4,#1d3a5c)}.jf.f3{--fc:light-dark(#bfe6cc,#1d4a30)}
 .jb.jf:hover{filter:brightness(.96)}
 .ovs em.pl{background:light-dark(#f1eafd,#2a2140);color:light-dark(#6a3fb5,#c3a6f5)}
 .grid tr:has(.ob.on:not(.pb)) td input[data-f=name]{color:var(--mut);text-decoration:line-through}
@@ -495,7 +495,7 @@ function renderResult(){
   const sS=sel!=null?B[sel]:null;if(!sS)sel=null;
   const prevs=[...new Set(st.map(s=>String(s.cls)))].sort((a,b)=>num(a)-num(b)||a.localeCompare(b));
   const pm=id=>{const L=pairsOf(id);const n1=L.filter(x=>x.t==='sep').length,n2=L.length-n1;return (n1?`<em class="sep">분${n1>1?n1:''}</em>`:'')+(n2?`<em class="tog">동${n2>1?n2:''}</em>`:'')};
-  const row=(s,j)=>`<button class="ovs rs ${s.sex}${s.out?' out':''}${s.id===sel?' on':''}${bad.has(s.id)?' bad':''}" data-id="${s.id}" title="${esc(s.cls)}반 ${esc(s.no)}번"><span>${j+1}</span><b>${esc(s.name)}</b><i>${has(s.lstg)?SG(+s.lstg):'·'}</i><i>${has(s.stg)?SG(+s.stg):'·'}</i><u>${s.plus&&!s.out?'<em class="pl">+1</em>':''}${has(s.fix)?'<em class="fx">고정</em>':''}${pm(s.id)}</u><small>${esc(s.cls)}</small></button>`;
+  const row=(s,j)=>`<button class="ovs rs ${s.sex}${s.out?' out':''}${s.id===sel?' on':''}${bad.has(s.id)?' bad':''}" data-id="${s.id}" title="${esc(s.cls)}반 ${esc(s.no)}번"><span>${j+1}</span><b>${esc(s.name)}</b><i class="${jf(s.lstg,s.lwk)}">${has(s.lstg)?SG(+s.lstg):'·'}</i><i class="${jf(s.stg,s.wk)}">${has(s.stg)?SG(+s.stg):'·'}</i><u>${has(s.fix)?'<em class="fx">고정</em>':''}</u><small>${esc(s.cls)}</small></button>`;
   box.innerHTML=`<div class="ovg">${C.map((c,i)=>{const n=c.filter(s=>!s.out),m=n.filter(s=>s.sex==='M').length,o=c.length-n.length,pl=n.filter(s=>s.plus).length,can=sS&&S.asg[sel]!==i;
     const pv={};n.forEach(s=>pv[s.cls]=(pv[s.cls]||0)+1);
     return `<section class="ovk"><header><b>${cname(i)}</b><span>${n.length}명${pl?`<em class="hp">+${pl}</em>`:''}${o?` +전출${o}`:''} · 남${m} 여${n.length-m}</span></header>${can?`<button class="mv" data-mv="${i}">${esc(sS.name)} 여기로</button>`:''}${sS&&S.asg[sel]===i?`<button class="mv fx" data-fix="1">${has(sS.fix)?'고정 풀기':esc(sS.name)+' 이 반에 고정'}</button>`:''}<div class="ovl">${c.map(row).join('')}</div>
@@ -565,7 +565,7 @@ function renderOv(){
   const sel=ovSel!=null?B[ovSel]:null;
   const bar=`<div class="ovbar"><div class="seg" id="ovtype"><button data-ovt="sep" class="${ovType==='sep'?'on':''}">분리</button><button data-ovt="tog" class="${ovType==='tog'?'on':''}">동반</button></div>
     <span class="ovmsg">${sel?`<b>${esc(sel.cls)} ${esc(sel.name)}</b> 선택됨 — ${ovType==='sep'?'떼어 놓을':'함께 둘'} 학생을 누르세요. 한 번 더 누르면 풀려요.<button class="ovx" data-ovclear>선택 해제</button>`:'학생을 누른 뒤, 분리하거나 동반할 학생을 누르세요.'}</span><span class="ovn">조건 ${S.pairs.length}개</span></div>`;
-  const card=k=>{const L=sorted().filter(s=>String(s.cls)===k);return `<section class="ovk"><header><b>${esc(k||'반 없음')}</b><span>${L.length}명</span></header><div class="ovl">${L.map(s=>`<button class="ovs ${s.sex}${s.out?' out':''}${s.id===ovSel?' on':''}${mine.has(s.id)?' '+mine.get(s.id):''}" data-ov="${s.id}"><span>${esc(s.no)}</span><b>${esc(s.name)}</b><i>${has(s.lstg)?SG(+s.lstg):'·'}</i><i>${has(s.stg)?SG(+s.stg):'·'}</i><u>${marks(s.id)}</u></button>`).join('')}</div></section>`};
+  const card=k=>{const L=sorted().filter(s=>String(s.cls)===k);return `<section class="ovk"><header><b>${esc(k||'반 없음')}</b><span>${L.length}명</span></header><div class="ovl">${L.map(s=>`<button class="ovs ${s.sex}${s.out?' out':''}${s.id===ovSel?' on':''}${mine.has(s.id)?' '+mine.get(s.id):''}" data-ov="${s.id}"><span>${esc(s.no)}</span><b>${esc(s.name)}</b><i class="${jf(s.lstg,s.lwk)}">${has(s.lstg)?SG(+s.lstg):'·'}</i><i class="${jf(s.stg,s.wk)}">${has(s.stg)?SG(+s.stg):'·'}</i><u>${marks(s.id)}</u></button>`).join('')}</div></section>`};
   $('#ov').innerHTML=bar+`<div class="ovg">${c.map(card).join('')}</div>`;
 }
 /* 반별 파일 내보내기 · 동학년 합치기 */

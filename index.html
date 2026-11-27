@@ -349,7 +349,7 @@ const opts=(list,v)=>list.map(([val,t])=>`<option value="${val}"${String(val)===
 const TCOLS=['cls','no','name','sex'];
 function pairsOf(id){return S.pairs.filter(p=>p.a===id||p.b===id).map(p=>({t:p.t,o:p.a===id?p.b:p.a}))}
 function pairCell(s){const B=byId(),L=pairsOf(s.id).map(x=>({t:x.t,st:B[x.o]})).filter(x=>x.st);
-  return `<button class="prb" data-pair="${s.id}" aria-label="${esc(s.name)} 분리·동반">${L.length?L.map(x=>`<span class="pt ${x.t}">${x.t==='sep'?'분리':'동반'} ${esc(x.st.name)}</span>`).join(''):'<span class="pt none">+</span>'}</button>`}
+  return `<button class="prb" data-pair="${s.id}" aria-label="${esc(s.name)} 분리·동반">${L.length?L.map(x=>`<span class="pt ${x.t}" title="${x.t==='sep'?'분리':'동반'}">${x.t==='sep'?'':'동반 '}${esc(x.st.name)}</span>`).join(''):'<span class="pt none">+</span>'}</button>`}
 function cells(s,sex){
   const v=f=>s?s[f]:'';const L=(i,cls,inner)=>`<td data-l="${['현재반','번호','이름','성별','학습','생활','분리·동반','+1','전출'][i]}"${cls?` class="${cls}"`:''}>${inner}</td>`;
   return L(0,'c',`<input data-f="cls" value="${esc(s?v('cls'):myCls())}" aria-label="현재반">`)+

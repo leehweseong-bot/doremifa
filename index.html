@@ -184,7 +184,12 @@ button.pt{min-height:30px;cursor:pointer}
 .ob{display:block;width:100%;height:46px;min-height:0;border:0;border-radius:0;background:transparent;font-size:14px;font-weight:700;color:var(--bad);padding:0}
 .ob:not(.on)::after{content:"";display:inline-block;width:16px;height:16px;border:1.5px solid var(--grid);border-radius:4px;vertical-align:middle}
 .ob.on{background:var(--badbg)}
-.grid tr:has(.ob.on) td input[data-f=name]{color:var(--mut);text-decoration:line-through}
+.ob.pb{color:light-dark(#6a3fb5,#c3a6f5)}.ob.pb.on{background:light-dark(#f1eafd,#2a2140)}
+.ovs.out b{text-decoration:line-through;color:var(--mut)}
+.ovk header em.hp{font-style:normal;font-size:12px;font-weight:700;margin-left:3px;padding:0 4px;border-radius:3px;background:light-dark(#f1eafd,#2a2140);color:light-dark(#6a3fb5,#c3a6f5)}
+.ovk header b{white-space:nowrap}
+.ovs em.pl{background:light-dark(#f1eafd,#2a2140);color:light-dark(#6a3fb5,#c3a6f5)}
+.grid tr:has(.ob.on:not(.pb)) td input[data-f=name]{color:var(--mut);text-decoration:line-through}
 .prb{width:100%;min-height:46px;height:100%;border:0;border-radius:0;background:transparent;display:flex;flex-wrap:wrap;gap:5px;align-items:center;justify-content:center;padding:4px 8px}
 .prb .pt{font-size:15px;padding:3px 10px}
 .prb:hover{background:light-dark(#f4f7f5,#1a2420)}
@@ -345,7 +350,7 @@ function pairsOf(id){return S.pairs.filter(p=>p.a===id||p.b===id).map(p=>({t:p.t
 function pairCell(s){const B=byId(),L=pairsOf(s.id).map(x=>({t:x.t,st:B[x.o]})).filter(x=>x.st);
   return `<button class="prb" data-pair="${s.id}" aria-label="${esc(s.name)} 분리·동반">${L.length?L.map(x=>`<span class="pt ${x.t}">${x.t==='sep'?'분리':'동반'} ${esc(x.st.name)}</span>`).join(''):'<span class="pt none">+</span>'}</button>`}
 function cells(s,sex){
-  const v=f=>s?s[f]:'';const L=(i,cls,inner)=>`<td data-l="${['현재반','번호','이름','성별','학습','생활','분리·동반','전출'][i]}"${cls?` class="${cls}"`:''}>${inner}</td>`;
+  const v=f=>s?s[f]:'';const L=(i,cls,inner)=>`<td data-l="${['현재반','번호','이름','성별','학습','생활','분리·동반','+1','전출'][i]}"${cls?` class="${cls}"`:''}>${inner}</td>`;
   return L(0,'c',`<input data-f="cls" value="${esc(s?v('cls'):myCls())}" aria-label="현재반">`)+
     L(1,'c',`<input data-f="no" value="${esc(v('no'))}" aria-label="번호">`)+
     L(2,'c',`<input data-f="name" value="${esc(v('name'))}" aria-label="이름"${s?'':' placeholder="이름 입력"'}>`)+
@@ -353,11 +358,12 @@ function cells(s,sex){
     L(4,'c lf',s?`<button class="jb" data-jm="learn" data-jid="${s.id}" aria-label="${esc(s.name)} 학습">${has(s.lstg)?SG(+s.lstg):''}</button>`:'')+
     L(5,'c lf',s?`<button class="jb" data-jm="life" data-jid="${s.id}" aria-label="${esc(s.name)} 생활">${has(s.stg)?SG(+s.stg):''}</button>`:'')+
     L(6,'pc',s?pairCell(s):'')+
-    L(7,'c oc',s?`<button class="ob${s.out?' on':''}" data-out="${s.id}" aria-pressed="${!!s.out}" aria-label="${esc(s.name)} 전출 예정">${s.out?'예정':''}</button>`:'');
+    L(7,'c oc',s?`<button class="ob pb${s.plus?' on':''}" data-plus="${s.id}" aria-pressed="${!!s.plus}" aria-label="${esc(s.name)} +1 처리">${s.plus?'+1':''}</button>`:'')+
+    L(8,'c oc',s?`<button class="ob${s.out?' on':''}" data-out="${s.id}" aria-pressed="${!!s.out}" aria-label="${esc(s.name)} 전출 예정">${s.out?'예정':''}</button>`:'');
 }
 function table(list,sex,title){
-  return `<div><h3 class="${sex}">${title}<span>${list.length}명</span></h3><table class="grid"><colgroup><col style="width:3.3em"><col style="width:2.8em"><col style="width:5.4em"><col style="width:3.3em"><col style="width:3.8em"><col style="width:3.8em"><col><col style="width:3em"><col style="width:30px"></colgroup>
-  <thead><tr><th>현재반</th><th>번호</th><th>이름</th><th>성별</th><th class="lf"><button class="thb" data-judge="${sex}" data-jm="learn">학습<small>도레미파</small></button></th><th class="lf"><button class="thb" data-judge="${sex}" data-jm="life">생활<small>도레미파</small></button></th><th>분리·동반</th><th>전출<small class="p">예정</small></th><th class="x"></th></tr></thead>
+  return `<div><h3 class="${sex}">${title}<span>${list.length}명</span></h3><table class="grid"><colgroup><col style="width:3em"><col style="width:2.4em"><col style="width:5em"><col style="width:3em"><col style="width:3.4em"><col style="width:3.4em"><col><col style="width:2.6em"><col style="width:2.6em"><col style="width:30px"></colgroup>
+  <thead><tr><th>현재반</th><th>번호</th><th>이름</th><th>성별</th><th class="lf"><button class="thb" data-judge="${sex}" data-jm="learn">학습<small>도레미파</small></button></th><th class="lf"><button class="thb" data-judge="${sex}" data-jm="life">생활<small>도레미파</small></button></th><th>분리·동반</th><th>+1<small class="p">처리</small></th><th>전출<small class="p">예정</small></th><th class="x"></th></tr></thead>
   <tbody data-sex="${sex}">${list.map(s=>`<tr data-id="${s.id}">${cells(s)}<td class="x"><button class="x" data-del="${s.id}" aria-label="${esc(s.name)} 삭제">✕</button></td></tr>`).join('')}<tr class="newrow" data-new="1">${cells(null,sex)}<td class="x"></td></tr></tbody></table></div>`;
 }
 const SG=i=>`<span class="sg sg${i}">${STG[i]}</span>`;
@@ -412,7 +418,7 @@ function renderJudge(){
 function judgePick(f,v){const s=S.stu.find(x=>x.id===jsel);if(!s)return toast('왼쪽에서 학생을 먼저 고르세요');s[MD()[f]]=v;save();renderHead();renderJudge();
   if(jDone(s)){clearTimeout(jt);jt=setTimeout(()=>{const L=jOrder(),i=L.findIndex(x=>x.id===jsel);const n=L.slice(i+1).find(x=>!jDone(x))||L.find(x=>!jDone(x));if(n){jsel=n.id;renderJudge();const on=$('#jlist .on');if(on)on.scrollIntoView({block:'nearest'})}},300)}}
 function studentOpts(){return sorted().map(s=>`<option value="${s.id}">${esc(s.cls)}반 ${esc(s.no)}번 ${esc(s.name)}</option>`).join('')}
-/* 편성 기준: 0 인원 · 1 남 · 2-5 학습 도레미파 · 6-9 생활 도레미파 · 10 생활지도량 · 11 생활 주5+ · 12 학습지도량 · 13 전출 예정 · 14+ 출신반 (전출 예정 학생은 13번만 셈) */
+/* 편성 기준: 0 인원(+1 처리 학생은 2명으로 셈) · 1 남 · 2-5 학습 도레미파 · 6-9 생활 도레미파 · 10 생활지도량 · 11 생활 주5+ · 12 학습지도량 · 13 전출 예정 · 14+ 출신반 (전출 예정 학생은 13번만 셈) */
 function optimize(){
   const st=S.stu,N=st.length,k=K();
   const idx=new Map(st.map((s,i)=>[s.id,i]));
@@ -429,7 +435,7 @@ function optimize(){
   const free=units.map((_,i)=>i).filter(i=>units[i].fx<0);
   const prevs=[...new Set(st.map(s=>String(s.cls)))],P=prevs.length,pi=new Map(prevs.map((p,i)=>[p,i]));
   const D=14+P,W=new Float64Array(D);[10,8,5,3,2,5,6,3,2,6,1.5,6,1.2,6].forEach((w,i)=>W[i]=w);for(let d=14;d<D;d++)W[d]=2;
-  const feat=st.map(s=>{if(s.out)return [[13,1]];const a=[[0,1],[10,WKV[has(s.wk)?+s.wk:1]],[12,WKV[has(s.lwk)?+s.lwk:1]],[14+pi.get(String(s.cls)),1]];
+  const feat=st.map(s=>{if(s.out)return [[13,1]];const a=[[0,s.plus?2:1],[10,WKV[has(s.wk)?+s.wk:1]],[12,WKV[has(s.lwk)?+s.lwk:1]],[14+pi.get(String(s.cls)),1]];
     if(s.sex==='M')a.push([1,1]);if(has(s.lstg))a.push([2+(+s.lstg),1]);if(has(s.stg))a.push([6+(+s.stg),1]);if(has(s.wk)&&+s.wk===3)a.push([11,1]);return a});
   const tgt=new Float64Array(D);feat.forEach(a=>a.forEach(([d,v])=>tgt[d]+=v/k));
   let best=null,bestCost=Infinity;
@@ -485,10 +491,10 @@ function renderResult(){
   const sS=sel!=null?B[sel]:null;if(!sS)sel=null;
   const prevs=[...new Set(st.map(s=>String(s.cls)))].sort((a,b)=>num(a)-num(b)||a.localeCompare(b));
   const pm=id=>{const L=pairsOf(id);const n1=L.filter(x=>x.t==='sep').length,n2=L.length-n1;return (n1?`<em class="sep">분${n1>1?n1:''}</em>`:'')+(n2?`<em class="tog">동${n2>1?n2:''}</em>`:'')};
-  const row=(s,j)=>`<button class="ovs rs ${s.sex}${s.out?' out':''}${s.id===sel?' on':''}${bad.has(s.id)?' bad':''}" data-id="${s.id}" title="${esc(s.cls)}반 ${esc(s.no)}번"><span>${j+1}</span><b>${esc(s.name)}</b><i>${has(s.lstg)?SG(+s.lstg):'·'}</i><i>${has(s.stg)?SG(+s.stg):'·'}</i><u>${has(s.fix)?'<em class="fx">고정</em>':''}${pm(s.id)}</u><small>${esc(s.cls)}</small></button>`;
-  box.innerHTML=`<div class="ovg">${C.map((c,i)=>{const n=c.filter(s=>!s.out),m=n.filter(s=>s.sex==='M').length,o=c.length-n.length,can=sS&&S.asg[sel]!==i;
+  const row=(s,j)=>`<button class="ovs rs ${s.sex}${s.out?' out':''}${s.id===sel?' on':''}${bad.has(s.id)?' bad':''}" data-id="${s.id}" title="${esc(s.cls)}반 ${esc(s.no)}번"><span>${j+1}</span><b>${esc(s.name)}</b><i>${has(s.lstg)?SG(+s.lstg):'·'}</i><i>${has(s.stg)?SG(+s.stg):'·'}</i><u>${s.plus&&!s.out?'<em class="pl">+1</em>':''}${has(s.fix)?'<em class="fx">고정</em>':''}${pm(s.id)}</u><small>${esc(s.cls)}</small></button>`;
+  box.innerHTML=`<div class="ovg">${C.map((c,i)=>{const n=c.filter(s=>!s.out),m=n.filter(s=>s.sex==='M').length,o=c.length-n.length,pl=n.filter(s=>s.plus).length,can=sS&&S.asg[sel]!==i;
     const pv={};n.forEach(s=>pv[s.cls]=(pv[s.cls]||0)+1);
-    return `<section class="ovk"><header><b>${cname(i)}</b><span>${n.length}명${o?` +전출${o}`:''} · 남${m} 여${n.length-m}</span></header>${can?`<button class="mv" data-mv="${i}">${esc(sS.name)} 여기로</button>`:''}${sS&&S.asg[sel]===i?`<button class="mv fx" data-fix="1">${has(sS.fix)?'고정 풀기':esc(sS.name)+' 이 반에 고정'}</button>`:''}<div class="ovl">${c.map(row).join('')}</div>
+    return `<section class="ovk"><header><b>${cname(i)}</b><span>${n.length}명${pl?`<em class="hp">+${pl}</em>`:''}${o?` +전출${o}`:''} · 남${m} 여${n.length-m}</span></header>${can?`<button class="mv" data-mv="${i}">${esc(sS.name)} 여기로</button>`:''}${sS&&S.asg[sel]===i?`<button class="mv fx" data-fix="1">${has(sS.fix)?'고정 풀기':esc(sS.name)+' 이 반에 고정'}</button>`:''}<div class="ovl">${c.map(row).join('')}</div>
     <footer><b>이전 학반</b>${prevs.map(p=>`<span class="pc">${esc(p)}반 <i>${pv[p]||0}</i></span>`).join('')}</footer></section>`}).join('')}</div>`;
 }
 
@@ -564,7 +570,7 @@ const slabel=s=>`${s.cls} ${s.no} ${s.name}`;
 function exportClass(){
   if(!ready())return;if(!S.stu.length)return toast('먼저 명단을 넣어 주세요');
   const wb=XLSX.utils.book_new(),L=sorted();
-  XLSX.utils.book_append_sheet(wb,sheet([['현재반','번호','이름','성별','학습','주당 학습지도','생활','주당 생활지도','전출 예정'],...L.map(s=>[s.cls,s.no,s.name,sx(s),has(s.lstg)?STG[+s.lstg]:'',has(s.lwk)?WK[+s.lwk]:'',has(s.stg)?STG[+s.stg]:'',has(s.wk)?WK[+s.wk]:'',s.out?'예정':''])],[7,6,10,6,6,13,6,13,9]),'명단');
+  XLSX.utils.book_append_sheet(wb,sheet([['현재반','번호','이름','성별','학습','주당 학습지도','생활','주당 생활지도','+1 처리','전출 예정'],...L.map(s=>[s.cls,s.no,s.name,sx(s),has(s.lstg)?STG[+s.lstg]:'',has(s.lwk)?WK[+s.lwk]:'',has(s.stg)?STG[+s.stg]:'',has(s.wk)?WK[+s.wk]:'',s.plus?'예':'',s.out?'예정':''])],[7,6,10,6,6,13,6,13,8,9]),'명단');
   const B=byId(),P=[['조건','학생 1','학생 2']];S.pairs.forEach(p=>{const a=B[p.a],b=B[p.b];if(a&&b)P.push([p.t==='sep'?'분리':'동반',slabel(a),slabel(b)])});
   XLSX.utils.book_append_sheet(wb,sheet(P,[6,16,16]),'분리·동반');
   const cc={};L.forEach(s=>cc[s.cls]=(cc[s.cls]||0)+1);const top=Object.keys(cc).sort((a,b)=>cc[b]-cc[a])[0]||'';
@@ -574,9 +580,9 @@ function readRoster(wb){
   const ws=wb.Sheets['명단']||wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}).map(r=>r.map(c=>String(c??'').trim()));
   const hi=rows.findIndex(r=>r.some(c=>/^(이름|성명)$/.test(c)));if(hi<0)return{list:[],pairs:[]};
   const h=rows[hi],f=re=>h.findIndex(c=>re.test(c));
-  const ix={cls:f(/^(현재\s*반|반)$/),no:f(/^(현재\s*번호|번호)$/),name:f(/^(이름|성명)$/),sex:f(/성별/),lstg:f(/^학습$/),lwk:f(/학습지도/),stg:f(/^생활$/),wk:f(/생활지도/),out:f(/전출/)};
+  const ix={cls:f(/^(현재\s*반|반)$/),no:f(/^(현재\s*번호|번호)$/),name:f(/^(이름|성명)$/),sex:f(/성별/),lstg:f(/^학습$/),lwk:f(/학습지도/),stg:f(/^생활$/),wk:f(/생활지도/),out:f(/전출/),plus:f(/\+\s*1/)};
   const list=rows.slice(hi+1).filter(r=>r[ix.name]).map(r=>{const s=newStu();const g=k=>ix[k]>=0?r[ix[k]]:'';
-    s.cls=g('cls');s.no=g('no');s.name=g('name');s.sex=normSex(g('sex'));s.lstg=normStg(g('lstg'));s.lwk=normWk(g('lwk'));s.stg=normStg(g('stg'));s.wk=normWk(g('wk'));s.out=!!String(g('out')).trim();return s});
+    s.cls=g('cls');s.no=g('no');s.name=g('name');s.sex=normSex(g('sex'));s.lstg=normStg(g('lstg'));s.lwk=normWk(g('lwk'));s.stg=normStg(g('stg'));s.wk=normWk(g('wk'));s.out=!!String(g('out')).trim();s.plus=!!String(g('plus')).trim();return s});
   const pairs=[];const ps=wb.Sheets['분리·동반'];
   if(ps){XLSX.utils.sheet_to_json(ps,{header:1,defval:''}).slice(1).forEach(r=>{const t=/분리/.test(r[0])?'sep':/동반/.test(r[0])?'tog':'';if(!t||!r[1]||!r[2])return;
     const k=v=>{const a=String(v).trim().split(/\s+/);const name=a.pop()||'',no=a.pop()||'';return `${a.join(' ')}|${no}|${name}`};pairs.push({t,a:k(r[1]),b:k(r[2])})})}
@@ -590,7 +596,7 @@ async function mergeFiles(files){
   const go=mode=>{
     if(mode==='rep'){S.stu=[];S.pairs=[];S.asg={};undo=[]}
     const byKey=new Map(S.stu.map(s=>[skey(s),s]));let added=0,upd=0;
-    list.forEach(n=>{const o=byKey.get(skey(n));if(o){['sex','lstg','lwk','stg','wk','out'].forEach(k=>{if(n[k]!==''&&n[k]!=null)o[k]=n[k]});upd++}else{S.stu.push(n);byKey.set(skey(n),n);added++}});
+    list.forEach(n=>{const o=byKey.get(skey(n));if(o){['sex','lstg','lwk','stg','wk','out','plus'].forEach(k=>{if(n[k]!==''&&n[k]!=null)o[k]=n[k]});upd++}else{S.stu.push(n);byKey.set(skey(n),n);added++}});
     let pc=0;pairs.forEach(p=>{const a=byKey.get(p.a),b=byKey.get(p.b);if(!a||!b||a===b)return;const i=S.pairs.findIndex(x=>(x.a===a.id&&x.b===b.id)||(x.a===b.id&&x.b===a.id));if(i>=0)S.pairs[i].t=p.t;else{S.pairs.push({a:a.id,b:b.id,t:p.t});pc++}});
     save();setTab('prep');toast(`파일 ${ok}개 · ${added}명 추가${upd?` · ${upd}명 갱신`:''}${pc?` · 조건 ${pc}개`:''}`);
   };
@@ -651,7 +657,7 @@ $('#lists').addEventListener('input',e=>{const el=e.target;if(el.dataset.f!=='ac
   if(el.value&&!tr.dataset.new){const s=S.stu.find(x=>x.id===+tr.dataset.id);if(s){setSel(s,'ac',el.value);save()}moveRow(el,1)}});
 $('#lists').addEventListener('keydown',e=>{const el=e.target;if(!el.dataset||!el.dataset.f||el.tagName!=='INPUT')return;
   if(e.key==='Enter'||e.key==='ArrowDown'){if(moveRow(el,1))e.preventDefault()}else if(e.key==='ArrowUp'){if(moveRow(el,-1))e.preventDefault()}});
-$('#lists').addEventListener('click',e=>{const j=e.target.closest('[data-judge]');if(j)return judgeOpen(j.dataset.judge,j.dataset.jm);const jb=e.target.closest('[data-jid]');if(jb){const x=S.stu.find(z=>z.id===+jb.dataset.jid);return judgeOpen(x&&x.sex,jb.dataset.jm,+jb.dataset.jid)}const pr=e.target.closest('[data-pair]');if(pr)return pairOpen(+pr.dataset.pair);const ob=e.target.closest('[data-out]');if(ob){const x=S.stu.find(z=>z.id===+ob.dataset.out);if(x){x.out=!x.out;save();renderList();toast(x.out?`${x.name}: 전출 예정`:`${x.name}: 전출 예정 취소`)}return}const d=e.target.closest('[data-del]');if(!d)return;const id=+d.dataset.del;S.stu=S.stu.filter(s=>s.id!==id);S.pairs=S.pairs.filter(p=>p.a!==id&&p.b!==id);delete S.asg[id];save();renderList()});
+$('#lists').addEventListener('click',e=>{const j=e.target.closest('[data-judge]');if(j)return judgeOpen(j.dataset.judge,j.dataset.jm);const jb=e.target.closest('[data-jid]');if(jb){const x=S.stu.find(z=>z.id===+jb.dataset.jid);return judgeOpen(x&&x.sex,jb.dataset.jm,+jb.dataset.jid)}const pr=e.target.closest('[data-pair]');if(pr)return pairOpen(+pr.dataset.pair);const ob=e.target.closest('[data-out]');const pb=e.target.closest('[data-plus]');if(pb){const x=S.stu.find(z=>z.id===+pb.dataset.plus);if(x){x.plus=!x.plus;save();renderList();toast(x.plus?`${x.name}: +1 처리 (학급 인원 1명 더 셈)`:`${x.name}: +1 처리 취소`)}return}if(ob){const x=S.stu.find(z=>z.id===+ob.dataset.out);if(x){x.out=!x.out;save();renderList();toast(x.out?`${x.name}: 전출 예정`:`${x.name}: 전출 예정 취소`)}return}const d=e.target.closest('[data-del]');if(!d)return;const id=+d.dataset.del;S.stu=S.stu.filter(s=>s.id!==id);S.pairs=S.pairs.filter(p=>p.a!==id&&p.b!==id);delete S.asg[id];save();renderList()});
 $('#jx').addEventListener('click',judgeClose);
 $('#jlist').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;clearTimeout(jt);jsex=b.dataset.g;const L=jOrder();const f=L.find(s=>!jDone(s))||L[0];jsel=f?f.id:null;renderJudge()});
 $('#px').addEventListener('click',pairClose);

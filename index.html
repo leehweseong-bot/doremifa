@@ -188,6 +188,7 @@ button.pt{min-height:30px;cursor:pointer}
 .ovs.out b{text-decoration:line-through;color:var(--mut)}
 .ovk header em.hp{font-style:normal;font-size:12px;font-weight:700;margin-left:3px;padding:0 4px;border-radius:3px;background:light-dark(#f1eafd,#2a2140);color:light-dark(#6a3fb5,#c3a6f5)}
 .ovk header b{white-space:nowrap}
+.jb .wkc{display:block;font-size:11px;font-weight:500;color:var(--mut);line-height:1.1;margin-top:1px;white-space:nowrap}
 .ovs em.pl{background:light-dark(#f1eafd,#2a2140);color:light-dark(#6a3fb5,#c3a6f5)}
 .grid tr:has(.ob.on:not(.pb)) td input[data-f=name]{color:var(--mut);text-decoration:line-through}
 .prb{width:100%;min-height:46px;height:100%;border:0;border-radius:0;background:transparent;display:flex;flex-wrap:wrap;gap:5px;align-items:center;justify-content:center;padding:4px 8px}
@@ -355,8 +356,8 @@ function cells(s,sex){
     L(1,'c',`<input data-f="no" value="${esc(v('no'))}" aria-label="번호">`)+
     L(2,'c',`<input data-f="name" value="${esc(v('name'))}" aria-label="이름"${s?'':' placeholder="이름 입력"'}>`)+
     L(3,'c',`<select data-f="sex" aria-label="성별">${opts([['','-'],['M','남'],['F','여']],s?v('sex'):sex)}</select>`)+
-    L(4,'c lf',s?`<button class="jb" data-jm="learn" data-jid="${s.id}" aria-label="${esc(s.name)} 학습">${has(s.lstg)?SG(+s.lstg):''}</button>`:'')+
-    L(5,'c lf',s?`<button class="jb" data-jm="life" data-jid="${s.id}" aria-label="${esc(s.name)} 생활">${has(s.stg)?SG(+s.stg):''}</button>`:'')+
+    L(4,'c lf',s?`<button class="jb" data-jm="learn" data-jid="${s.id}" aria-label="${esc(s.name)} 학습">${has(s.lstg)?SG(+s.lstg):''}${has(s.lwk)?`<small class="wkc">${WK[+s.lwk]}</small>`:''}</button>`:'')+
+    L(5,'c lf',s?`<button class="jb" data-jm="life" data-jid="${s.id}" aria-label="${esc(s.name)} 생활">${has(s.stg)?SG(+s.stg):''}${has(s.wk)?`<small class="wkc">${WK[+s.wk]}</small>`:''}</button>`:'')+
     L(6,'pc',s?pairCell(s):'')+
     L(7,'c oc',s?`<button class="ob pb${s.plus?' on':''}" data-plus="${s.id}" aria-pressed="${!!s.plus}" aria-label="${esc(s.name)} +1 처리">${s.plus?'+1':''}</button>`:'')+
     L(8,'c oc',s?`<button class="ob${s.out?' on':''}" data-out="${s.id}" aria-pressed="${!!s.out}" aria-label="${esc(s.name)} 전출 예정">${s.out?'예정':''}</button>`:'');
@@ -495,7 +496,7 @@ function renderResult(){
   box.innerHTML=`<div class="ovg">${C.map((c,i)=>{const n=c.filter(s=>!s.out),m=n.filter(s=>s.sex==='M').length,o=c.length-n.length,pl=n.filter(s=>s.plus).length,can=sS&&S.asg[sel]!==i;
     const pv={};n.forEach(s=>pv[s.cls]=(pv[s.cls]||0)+1);
     return `<section class="ovk"><header><b>${cname(i)}</b><span>${n.length}명${pl?`<em class="hp">+${pl}</em>`:''}${o?` +전출${o}`:''} · 남${m} 여${n.length-m}</span></header>${can?`<button class="mv" data-mv="${i}">${esc(sS.name)} 여기로</button>`:''}${sS&&S.asg[sel]===i?`<button class="mv fx" data-fix="1">${has(sS.fix)?'고정 풀기':esc(sS.name)+' 이 반에 고정'}</button>`:''}<div class="ovl">${c.map(row).join('')}</div>
-    <footer><b>이전 학반</b>${prevs.map(p=>`<span class="pc">${esc(p)}반 <i>${pv[p]||0}</i></span>`).join('')}</footer></section>`}).join('')}</div>`;
+    <footer><b>주당 지도 횟수 (추정)</b>${(()=>{const t=f=>Math.round(n.reduce((a,s)=>a+(has(s[f])?WKV[+s[f]]:0),0));return `<span class="pc">학습 <i>${t('lwk')}</i>회</span><span class="pc">생활 <i>${t('wk')}</i>회</span>`})()}<b>이전 학반</b>${prevs.map(p=>`<span class="pc">${esc(p)}반 <i>${pv[p]||0}</i></span>`).join('')}</footer></section>`}).join('')}</div>`;
 }
 
 /* 엑셀 */
